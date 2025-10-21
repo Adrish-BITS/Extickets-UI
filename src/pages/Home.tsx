@@ -42,11 +42,11 @@ export default function Home() {
     try {
       let url = '';
       if (user.role === 'admin') {
-        url = 'http://192.168.29.94:8080/api/admin/tickets/status/in-review';
+        url = 'http://localhost:8080/api/admin/tickets/status/in-review';
       } else {
         url = activeTab === 'approved'
-          ? 'http://192.168.29.94:8080/api/admin/tickets/status/approved'
-          : `http://192.168.29.94:8080/api/tickets/user/${user.email}`;
+          ? 'http://localhost:8080/api/admin/tickets/status/approved'
+          : `http://localhost:8080/api/tickets/user/${user.email}`;
       }
 
       const res = await fetch(url, { method: 'GET', headers: { Authorization: `Bearer ${idToken}` } });
@@ -84,7 +84,7 @@ export default function Home() {
     try {
       setApproving(true);
       const res = await fetch(
-        `http://192.168.29.94:8080/api/admin/tickets/ticket/${ticket.id}/changeStatus/approved`,
+        `http://localhost:8080/api/admin/tickets/ticket/${ticket.id}/changeStatus/approved`,
         {
           method: 'POST',
           headers: {

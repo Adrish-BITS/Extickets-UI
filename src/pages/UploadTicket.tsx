@@ -33,7 +33,7 @@ export default function UploadTicket() {
   
     try {
       const idToken = localStorage.getItem('token'); // send auth token
-      const res = await fetch('http://192.168.29.94:8080/api/tickets/upload', {
+      const res = await fetch('http://localhost:8080/api/tickets/upload', {
         method: 'POST',
         body: formData,
         headers: {

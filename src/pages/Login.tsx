@@ -36,7 +36,7 @@ export default function Login() {
     localStorage.setItem('token', idToken);
     setLoading(true);
     try {
-      const res = await fetch('http://192.168.29.94:8080/auth/google', {
+      const res = await fetch('http://localhost:8081/auth/google', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ idToken }),
