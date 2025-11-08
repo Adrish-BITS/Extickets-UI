@@ -84,7 +84,7 @@ export default function Home() {
     try {
       setApproving(true);
       const res = await fetch(
-        `http://localhost:8080/api/admin/tickets/ticket/${ticket.id}/changeStatus/approved`,
+        `http://localhost:8084/api/admin/tickets/ticket/${ticket.id}/changeStatus/approved/comments/HI`,
         {
           method: 'POST',
           headers: {
