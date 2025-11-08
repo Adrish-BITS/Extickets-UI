@@ -28,29 +28,51 @@ export default function Home() {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState<{ type: 'image' | 'pdf'; url: string } | null>(null);
   const [approving, setApproving] = useState(false);
-
+  const [rejectModalOpen, setRejectModalOpen] = useState(false);
+  const [rejectComment, setRejectComment] = useState("");
+  const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
+  
   const idToken = localStorage.getItem('token');
 
   useEffect(() => {
-    if (!user) navigate('/login');
-  }, [user, navigate]);
+    if (!user || !idToken) {
+      dispatch(logout());
+      navigate('/login');
+    }
+  }, [user, idToken, navigate, dispatch]);
 
   const fetchTickets = async () => {
     if (!idToken || !user) return;
+  
     setLoading(true);
     setError('');
+  
     try {
       let url = '';
+  
       if (user.role === 'admin') {
-        url = 'http://localhost:8080/api/admin/tickets/status/in-review';
+        url = 'http://192.168.29.94:8084/api/admin/tickets/status/in-review';
+        
       } else {
         url = activeTab === 'approved'
-          ? 'http://localhost:8080/api/admin/tickets/status/approved'
-          : `http://localhost:8080/api/tickets/user/${user.email}`;
-      }
+          ? 'http://192.168.29.94:8084/api/admin/tickets/status/approved'
+          : `http://192.168.29.94:8080/api/tickets/user/${user.email}`;
 
-      const res = await fetch(url, { method: 'GET', headers: { Authorization: `Bearer ${idToken}` } });
+          console.log({user})
+      }
+  
+      const res = await fetch(url, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${idToken}`,   // ✅ Token
+          'Content-Type': 'application/json',   // ✅ Keep consistent
+        },
+      });
+
+      console.log(res)
+  
       if (!res.ok) throw new Error(`Failed to fetch tickets (${res.status})`);
+  
       const data = await res.json();
       setTickets(Array.isArray(data) ? data : data.tickets || []);
     } catch (err: any) {
@@ -59,14 +81,17 @@ export default function Home() {
       setLoading(false);
     }
   };
+  
+  
 
   useEffect(() => {
     fetchTickets();
   }, [activeTab, idToken, user]);
 
   const handleLogout = () => {
+    localStorage.removeItem("token");
     dispatch(logout());
-    navigate('/login');
+    navigate("/login");
   };
 
   const openModal = (url: string, type: 'image' | 'pdf') => {
@@ -84,7 +109,7 @@ export default function Home() {
     try {
       setApproving(true);
       const res = await fetch(
-        `http://localhost:8084/api/admin/tickets/ticket/${ticket.id}/changeStatus/approved/comments/HI`,
+        `http://192.168.29.94:8084/api/admin/tickets/ticket/${ticket.id}/changeStatus/approved/comments/null`,
         {
           method: 'POST',
           headers: {
@@ -93,18 +118,48 @@ export default function Home() {
           },
         }
       );
-
+  
       if (!res.ok) throw new Error(`Failed to approve ticket (${res.status})`);
-
+  
       alert('Ticket approved successfully!');
       fetchTickets();
     } catch (err: any) {
-      console.error('Failed to approve ticket:', err.message);
-      alert('Failed to approve ticket. Please try again.');
+      alert(err.message);
     } finally {
       setApproving(false);
     }
   };
+  
+  const handleRejectSubmit = async () => {
+    if (!selectedTicket || !idToken) return;
+  
+    try {
+      setApproving(true);
+      
+      const res = await fetch(
+        `http://192.168.29.94:8084/api/admin/tickets/ticket/${selectedTicket.id}/changeStatus/rejected/comments/${rejectComment}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+  
+      if (!res.ok) throw new Error("Failed to reject ticket");
+  
+      alert("Ticket rejected.");
+      setRejectModalOpen(false);
+      setRejectComment("");
+      fetchTickets();
+    } catch (err: any) {
+      alert("Error: " + err.message);
+    } finally {
+      setApproving(false);
+    }
+  };
+  
 
   return (
     <div style={styles.container}>
@@ -157,8 +212,26 @@ export default function Home() {
                 {ticket.status && <p><strong>Status:</strong> {ticket.status}</p>}
                 {user?.role === 'admin' && ticket.userEmail && <p><strong>Posted By:</strong> {ticket.userEmail}</p>}
                 {user?.role === 'admin' && ticket.status === 'in-review' && (
-                  <button style={styles.approveButton} onClick={() => handleApprove(ticket)}>Approve</button>
-                )}
+  <div style={{ display: "flex", gap: "10px" }}>
+    <button
+      style={styles.approveButton}
+      onClick={() => handleApprove(ticket)}
+    >
+      Approve
+    </button>
+
+    <button
+      style={{ ...styles.approveButton, backgroundColor: "#dc3545" }}
+      onClick={() => {
+        setSelectedTicket(ticket);
+        setRejectModalOpen(true);
+      }}
+    >
+      Reject
+    </button>
+  </div>
+)}
+
               </div>
               {ticket.eventImagePath && <img src={ticket.eventImagePath} alt={ticket.eventName} style={{ width: '120px', height: '100px', cursor: 'pointer' }} onClick={() => openModal(ticket.eventImagePath!, 'image')} />}
               {ticket.filePath && <p style={{ marginTop: '10px' }}><strong>File:</strong> <span style={{ color: '#007bff', cursor: 'pointer' }} onClick={() => openModal(ticket.filePath!, 'pdf')}>View PDF</span></p>}
@@ -181,10 +254,32 @@ export default function Home() {
         </div>
       )}
 
+{rejectModalOpen && (
+      <div style={styles.modalOverlay} onClick={() => setRejectModalOpen(false)}>
+        <div style={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+          <h3>Reject Ticket</h3>
+          <textarea
+            rows={4}
+            placeholder="Enter rejection reason"
+            value={rejectComment}
+            onChange={(e) => setRejectComment(e.target.value)}
+            style={{ width: "300px", padding: "8px", borderRadius: "6px" }}
+          />
+          <br />
+          <button onClick={handleRejectSubmit} style={styles.approveButton}>
+            Submit
+          </button>
+          <button onClick={() => setRejectModalOpen(false)} style={{ ...styles.approveButton, backgroundColor: "#777" }}>
+            Cancel
+          </button>
+        </div>
+      </div>
+    )}
+
       {/* Full screen loader for approving */}
       {approving && (
         <div style={styles.loaderOverlay}>
-          <div style={styles.loader}>Approving ticket...</div>
+          <div style={styles.loader}>Loading...</div>
         </div>
       )}
     </div>
@@ -208,3 +303,4 @@ const styles = {
   loaderOverlay: { position: 'fixed' as const, top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 10000 },
   loader: { padding: '20px 40px', backgroundColor: '#fff', borderRadius: '8px', fontSize: '18px', fontWeight: 'bold' },
 };
+

@@ -1,0 +1,79 @@
+/* Dark navbar styling similar to TicketSwap */
+.custom-navbar {
+    background-color: #0a1828; /* Dark navy shade */
+    color: white;
+    height: 90px;
+  }
+  
+  /* Logo text */
+  .brand-text {
+    /* font-family: "Segoe UI"; */
+    font-weight: bold;
+    font-size: 2.2rem;
+    color: white;
+  }
+  
+  /* Navbar links */
+  .nav-link-custom {
+    color: white !important;
+    font-size: 1rem;
+    margin-right: 20px;
+  }
+  
+  .nav-link-custom:hover {
+    text-decoration: underline;
+    color: #00b4d8 !important;
+  }
+  
+  /* Sell tickets button */
+  .sell-button {
+    background-color: #00b4d8;
+    border: none;
+    font-weight: 500;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+  }
+  
+  .sell-button:hover {
+    background-color: #0096c7;
+    color: white;
+  }
+  
+  /* Navbar */
+  .custom-navbar {
+    background-color: #0a1828;
+  }
+  
+  /* Hero Section */
+  .hero-section {
+    position: relative;
+    height: 90vh;
+    background: url("https://media.istockphoto.com/id/1458782106/photo/scenic-aerial-view-of-the-mountain-landscape-with-a-forest-and-the-crystal-blue-river-in.jpg?s=2048x2048&w=is&k=20&c=jbXMS_yFujUo29EIjPd8XBsEan-PAHUcPs0Zo1-HY_U=") center center / cover no-repeat;
+  }
+  
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 24, 40, 0.75);
+    z-index: 1;
+  }
+  
+  /* Text & search alignment */
+  .hero-section h1 {
+    z-index: 2;
+  }
+  
+  .hero-search-bar {
+    z-index: 2;
+    width: 100%;
+  }
+  
+  .search-wrapper input {
+    font-size: 1rem;
+    color: #333;
+  }
+  
+  .search-wrapper input::placeholder {
+    color: #888;
+  }

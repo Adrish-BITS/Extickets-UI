@@ -31,29 +31,36 @@ export default function Login() {
 
   // Google OAuth login
   const handleGoogleSuccess = async (credentialResponse: any) => {
-    const idToken = credentialResponse?.credential;
-    if (!idToken) return;
-    localStorage.setItem('token', idToken);
-    setLoading(true);
+    const googleToken = credentialResponse?.credential;
+    if (!googleToken) return;
+  
     try {
-      const res = await fetch('http://localhost:8081/auth/google', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ idToken }),
-        credentials: 'include',
+      const res = await fetch("http://192.168.29.94:8081/auth/google", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken: googleToken })
       });
+  
       const data = await res.json();
-      const user = data.user || data;
-      if (!user?.email) throw new Error('Invalid user data');
-      dispatch(loginWithGoogle(user));
-      if (data.token) localStorage.setItem('token', data.token);
-      navigate('/home');
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
+  
+      if (!res.ok) throw new Error(data.message || "Login failed");
+  
+      // ✅ Save backend JWT token
+      localStorage.setItem("token", data.token);
+  
+      // ✅ (Optional) Save logged in user in Redux if needed
+      dispatch(loginWithGoogle({
+        name: data.name,
+        email: data.email
+      }));
+  
+      navigate("/home"); // ✅ Move to Home
+    } catch (err) {
+      console.error(err);
+      alert(" Google login failed");
     }
   };
+  
 
   // Admin login
   const handleAdminLogin = () => {
