@@ -34,7 +34,12 @@ export default function Home() {
   const [rejectModalOpen, setRejectModalOpen] = useState(false);
   const [rejectComment, setRejectComment] = useState("");
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
-  
+
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortField, setSortField] = useState('');
+  const [filterField, setFilterField] = useState('');
+  const [allVenues, setAllVenues] = useState<string[]>([]);
+
   const idToken = localStorage.getItem('token');
 
   useEffect(() => {
@@ -46,13 +51,13 @@ export default function Home() {
 
   const fetchTickets = async () => {
     if (!idToken || !user) return;
-  
+
     setLoading(true);
     setError('');
-  
+
     try {
       let url = '';
-  
+
       if (user.role === 'admin') {
         url = 'http://192.168.29.94:8084/api/admin/tickets/status/in-review';
       } else {
@@ -60,7 +65,7 @@ export default function Home() {
           ? 'http://192.168.29.94:8084/api/admin/tickets/status/approved'
           : `http://192.168.29.94:8080/api/tickets/user/${user.email}`;
       }
-  
+
       const res = await fetch(url, {
         method: 'GET',
         headers: {
@@ -68,18 +73,26 @@ export default function Home() {
           'Content-Type': 'application/json',
         },
       });
-  
+
       if (!res.ok) throw new Error(`Failed to fetch tickets (${res.status})`);
-  
+
       const data = await res.json();
-      setTickets(Array.isArray(data) ? data : data.tickets || []);
+      const ticketList = Array.isArray(data) ? data : data.tickets || [];
+      setTickets(ticketList);
+
+     // Populate venues for filter dropdown
+const venues: string[] = Array.from(
+  new Set(ticketList.map(t => t.venue).filter((v): v is string => !!v))
+);
+setAllVenues(venues);
+
     } catch (err: any) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
   };
-  
+
   useEffect(() => {
     fetchTickets();
   }, [activeTab, idToken, user]);
@@ -138,19 +151,33 @@ export default function Home() {
     }
   };
 
+  // Filtered & sorted tickets
+  const displayedTickets = tickets
+    .filter(ticket => {
+      const query = searchQuery.toLowerCase();
+      return (
+        ticket.eventName.toLowerCase().includes(query) ||
+        ticket.venue.toLowerCase().includes(query) ||
+        (ticket.userEmail?.toLowerCase().includes(query) ?? false)
+      ) && (filterField ? ticket.venue === filterField : true);
+    })
+    .sort((a, b) => {
+      if (!sortField) return 0;
+      if (sortField === 'date') return new Date(a.eventDateTime).getTime() - new Date(b.eventDateTime).getTime();
+      if (sortField === 'venue') return a.venue.localeCompare(b.venue);
+      if (sortField === 'price') return a.price - b.price;
+      return 0;
+    });
+
   return (
     <div className="app-container">
       {/* Navbar */}
       <header className="nav-header">
         <nav className="nav-container">
           <div className="nav-content">
-          <a href="#" className="logo-link">
-  <img 
-    src={logo} 
-    alt="TicketWave Logo" 
-    style={{ height: '90px', width: '110px' }} 
-  />
-</a>
+            <a href="#" className="logo-link">
+              <img src={logo} alt="TicketWave Logo" style={{ height: '100px', width: '150px' }} />
+            </a>
             <div className="nav-links">
               {user?.role !== 'admin' && <button onClick={() => navigate('/upload')} className="nav-link">Upload Ticket</button>}
               <button onClick={() => setProfileModalOpen(true)} className="nav-link">Profile</button>
@@ -182,43 +209,114 @@ export default function Home() {
       )}
 
       <main className="content-wrapper">
-        <h2 style={{ color: '#5eead4', marginBottom: '20px' }}>
-          {user?.role === 'admin' ? 'New Tickets (In-Review)' : activeTab === 'approved' ? 'Approved Tickets' : 'My Tickets'}
-        </h2>
+        {/* Admin Instructions */}
+        {user?.role === 'admin' && (
+          <div className="admin-instructions">
+            <h3>Ticket Approval Guidelines</h3>
+            <div className="instructions-box">
+              <p><strong>Approve if:</strong></p>
+              <ul>
+                <li>Event date and time are valid and match the event timeline.</li>
+                <li>Ticket image is clear, without blur or cropping. All relevant ticket info should be readable.</li>
+                <li>No personal or sensitive information is visible (name, email, booking ID).</li>
+                <li>Seat/location details appear genuine and accurate.</li>
+              </ul>
+              <p><strong>Reject if:</strong></p>
+              <ul>
+                <li>Ticket appears fake, modified, or altered (mismatched fonts, low-quality edits, inconsistent details).</li>
+                <li>Details are incomplete, incorrect, or suspicious (missing seat numbers, improbable pricing, conflicting event timing).</li>
+                <li>Image is unclear, cropped, or unreadable (blurry text, glare, incomplete scan).</li>
+              </ul>
+              <p>When rejecting a ticket, provide a short reason to the seller and suggest corrective steps.</p>
+            </div>
+          </div>
+        )}
+
+        {/* Search, Sort, Filter */}
+        <div className="tickets-controls">
+          <input
+            type="text"
+            placeholder="Search by event name, venue, or user..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="search-box"
+          />
+          <select
+            value={sortField}
+            onChange={(e) => setSortField(e.target.value)}
+            className="sort-dropdown"
+          >
+            <option value="">Sort By</option>
+            <option value="date">Date</option>
+            <option value="venue">Venue</option>
+            <option value="price">Price</option>
+          </select>
+          <select
+            value={filterField}
+            onChange={(e) => setFilterField(e.target.value)}
+            className="filter-dropdown"
+          >
+            <option value="">Filter By Venue</option>
+            {allVenues.map((venue) => (
+              <option key={venue} value={venue}>{venue}</option>
+            ))}
+          </select>
+        </div>
 
         {loading ? <p>Loading tickets...</p> :
          error ? <p style={{ color: 'red' }}>{error}</p> :
-         tickets.length === 0 ? <p>No tickets found.</p> :
+         displayedTickets.length === 0 ? <p>No tickets found.</p> :
          <div className="tickets-grid">
-          {tickets.map(ticket => (
-            <div key={ticket.id} className="hero-card">
-              {ticket.eventImagePath && (
-                <img src={ticket.eventImagePath} alt={ticket.eventName} onClick={() => openModal(ticket.eventImagePath!, 'image')} />
-              )}
-              <h3>{ticket.eventName}</h3>
-              <p><strong>Venue:</strong> {ticket.venue}</p>
-              <p><strong>Date:</strong> {new Date(ticket.eventDateTime).toLocaleString()}</p>
-              <p><strong>Price:</strong> ${ticket.price}</p>
-              {ticket.status && <p><strong>Status:</strong> {ticket.status}</p>}
-              {user?.role === 'admin' && ticket.userEmail && <p><strong>Posted By:</strong> {ticket.userEmail}</p>}
-              {user?.role === 'admin' && ticket.status === 'in-review' && (
-                <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-                  <button className="btn-primary" onClick={() => handleApprove(ticket)}>Approve</button>
-                  <button className="btn-secondary" onClick={() => { setSelectedTicket(ticket); setRejectModalOpen(true); }}>Reject</button>
+          {displayedTickets.map(ticket => (
+            <div key={ticket.id} className="ticket-card">
+
+              {/* LEFT IMAGE */}
+              <div className="ticket-image-wrapper">
+                {ticket.eventImagePath ? (
+                  <img
+                    src={ticket.eventImagePath}
+                    alt={ticket.eventName}
+                    className="ticket-image"
+                    onClick={() => openModal(ticket.eventImagePath!, "image")}
+                  />
+                ) : (
+                  <div className="ticket-placeholder">No Image</div>
+                )}
+              </div>
+
+              {/* RIGHT DETAILS */}
+              <div className="ticket-details">
+                <h3 className="ticket-title">{ticket.eventName}</h3>
+                <p><span>Venue:</span> {ticket.venue}</p>
+                <p><span>Date:</span> {new Date(ticket.eventDateTime).toLocaleString()}</p>
+                <p><span>Price:</span> ${ticket.price}</p>
+                {ticket.status && <p><span>Status:</span> {ticket.status}</p>}
+                {user?.role === "admin" && ticket.userEmail && <p><span>Posted By:</span> {ticket.userEmail}</p>}
+                {ticket.filePath && (
+                  <p className="ticket-pdf">
+                    <span>File:</span>{" "}
+                    <strong onClick={() => window.open(ticket.filePath!, "_blank")}>View PDF</strong>
+                  </p>
+                )}
+              </div>
+
+              {/* BUTTON COLUMN */}
+              {user?.role === "admin" && (
+                <div className="ticket-action-cell">
+                  <button className="btn-approve" onClick={() => handleApprove(ticket)}>Approve</button>
+                  <button
+                    className="btn-reject"
+                    onClick={() => { setSelectedTicket(ticket); setRejectModalOpen(true); }}
+                  >
+                    Reject
+                  </button>
                 </div>
               )}
-              {ticket.filePath && (
-                <p style={{ marginTop: '10px' }}>
-                  <strong>File:</strong>{' '}
-                  <span style={{ color: '#5eead4', cursor: 'pointer' }} 
-                   onClick={() => window.open(ticket.filePath!, '_blank')}>View PDF</span>
-                </p>
-              )}
+
             </div>
           ))}
-         </div>
+        </div>
         }
-
 
         {/* Reject Modal */}
         {rejectModalOpen && (

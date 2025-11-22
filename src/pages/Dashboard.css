@@ -1,16 +1,44 @@
-/* Page background */
-.app-container {
-  min-height: 100vh;
-  background: linear-gradient(to bottom right, #0f172a, #064e3b);
-  color: #5eead4;
+/* ===========================
+   GLOBAL RESET
+=========================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  background: #0f172a;
   font-family: system-ui, sans-serif;
 }
 
-/* Navbar */
+/* ===========================
+   PAGE BACKGROUND
+=========================== */
+.app-container {
+  min-height: 100vh;
+  background-color: white;
+  /* background: linear-gradient(to bottom right, #0f172a, #064e3b); */
+  color: #e0505c;
+}
+
+/* ===========================
+   NAVBAR
+=========================== */
 .nav-header {
   width: 100%;
-  background: rgba(0, 0, 0, 0.9);
+  background-color: #e0505c;
+  /* background: rgba(0,0,0,0.9); */
   backdrop-filter: blur(6px);
+  padding: 0 20px;
+}
+
+.nav-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 64px;
 }
 
 .nav-container {
@@ -19,14 +47,6 @@
   padding: 0 20px;
 }
 
-.nav-content {
-  display: flex;
-  height: 64px;
-  align-items: center;
-  justify-content: space-between;
-}
-
-/* Logo */
 .logo-link {
   display: flex;
   align-items: center;
@@ -49,24 +69,32 @@
   text-shadow: 0 2px 8px rgba(16,185,129,0.18);
 }
 
-/* Desktop Nav Links */
 .nav-links {
   display: flex;
   gap: 24px;
 }
 
-.nav-link {
-  color: #5eead4;
+.nav-link,
+.nav-links button {
+  background: none;
+  border: none;
+  color: white;
   font-weight: 500;
+  cursor: pointer;
   text-decoration: none;
+  margin-left: 15px;
+  padding: 6px 12px;
+  border-radius: 6px;
   transition: 0.2s;
 }
 
-.nav-link:hover {
+.nav-link:hover,
+.nav-links button:hover {
   color: white;
+  background: rgba(94, 234, 212, 0.2);
 }
 
-/* Mobile button */
+/* Mobile toggle */
 .mobile-btn {
   display: none;
 }
@@ -101,7 +129,9 @@
   color: white;
 }
 
-/* Hero section */
+/* ===========================
+   HERO SECTION
+=========================== */
 .content-wrapper {
   max-width: 1200px;
   margin: auto;
@@ -119,55 +149,552 @@
 .hero-title {
   font-size: 44px;
   font-weight: 800;
-  color: #5eead4;
+  color: #e0505c;
   text-shadow: 0 6px 30px rgba(8,145,110,0.12);
 }
 
 .white-text {
-  color: #fff;
+  color:  #e0505c;
 }
 
 .hero-desc {
   margin-top: 12px;
-  color: #99f6e4;
+  color: #e0505c;
   max-width: 520px;
 }
 
-/* Buttons */
+/* Hero Buttons */
 .hero-buttons {
   margin-top: 28px;
   display: flex;
   gap: 12px;
 }
 
+/* ===========================
+   TICKETS GRID + CARDS
+=========================== */
+/* Grid layout */
+.tickets-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  padding: 20px;
+}
+
+/* Main card container */
+.ticket-card {
+  display: flex;
+  gap: 20px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  padding: 18px;
+  border-radius: 18px;
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+  transition: transform .3s ease, box-shadow .3s ease;
+}
+
+
+
+/* Card hover animation */
+.ticket-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
+}
+
+/* LEFT IMAGE */
+.ticket-image-wrapper {
+  width: 40%;
+  min-width: 220px;
+  max-height: 220px;
+}
+
+.ticket-image {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: opacity .3s;
+}
+
+.ticket-image:hover {
+  opacity: .88;
+}
+
+/* RIGHT SECTION */
+.ticket-details {
+  width: 60%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: black;
+}
+
+.ticket-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: rgb(235, 87, 87);
+}
+
+/* Label styling */
+.ticket-details span {
+  color: black;
+  font-weight: 600;
+}
+
+.ticket-details p {
+  margin: 4px 0;
+  font-size: 1.25rem;
+}
+
+/* Buttons */
+.ticket-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 15px;
+}
+
+.btn-approve,
+.btn-reject {
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: 600;
+  width: 100%;
+  text-align: center;
+}
+
+/* APPROVE BUTTON — white bg + black text + black border */
+.btn-approve {
+  background: white;
+  color: black;
+  border: 2px solid black;
+}
+
+/* REJECT BUTTON — white bg + red text + red border */
+.btn-reject {
+  background: white;
+  color: #ef4444;
+  border: 2px solid #ef4444;
+}
+
+
+/* PDF link */
+.ticket-pdf strong {
+  color: black;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* Tear-edge decorative effect */
+.ticket-card::before,
+.ticket-card::after {
+  content: "";
+  width: 14px;
+  height: 14px;
+  background: #1b1b1b;
+  border-radius: 50%;
+  position: absolute;
+  left: -7px;
+}
+
+.ticket-card::before {
+  top: 40px;
+}
+
+.ticket-card::after {
+  bottom: 40px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .ticket-card {
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  .ticket-image-wrapper {
+    width: 100%;
+  }
+
+  .ticket-details {
+    width: 100%;
+  }
+}
+
+.ticket-action-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;   /* vertically center the buttons */
+  align-items: center;       /* horizontally center the buttons */
+  gap: 12px;
+  width: 120px;              /* keeps column narrow */
+}
+
+
+
+/* ===========================
+   BUTTONS (Unified)
+=========================== */
+
 .btn-primary,
 .btn-secondary {
-  padding: 12px 24px;
-  border-radius: 40px;
-  font-size: 14px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: 0.2s;
+  width: 100% !important;   /* makes both equal width */
 }
 
 .btn-primary {
-  background: rgba(45, 212, 191, 0.2);
-  border: 1px solid rgba(45, 212, 191, 0.4);
+  padding: 12px;
+  border-radius: 10px;
+  border: 2px solid black; /* added */
+  background: black;       /* changed */
+  color: white;            /* changed */
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
 }
 
 .btn-primary:hover {
+  background: #333; /* subtle hover for black button */
   transform: scale(1.05);
 }
 
 .btn-secondary {
-  border: 1px solid rgba(45, 212, 191, 0.4);
+  padding: 12px;
+  border-radius: 10px;
+  border: 2px solid black; /* added */
+  background: white;       /* changed */
+  cursor: pointer;
+  color: black;            /* changed */
 }
 
 .btn-secondary:hover {
   filter: brightness(1.15);
 }
 
-/* Responsive */
+
+/* ===========================
+   INPUT FIELDS (Unified)
+=========================== */
+.input-field {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #5eead4;
+  background: rgba(255,255,255,0.05);
+  color: #fff;
+  font-size: 16px;
+}
+
+.input-field::placeholder {
+  color: rgba(94, 234, 212, 0.7);
+}
+
+input[type="datetime-local"].input-field::-webkit-calendar-picker-indicator,
+input[type="datetime-local"].input-field::-moz-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
+}
+
+/* ===========================
+   FULL SCREEN UPLOAD FORM
+=========================== */
+.upload-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  width: 100%;
+ 
+  background: white; /* full white background */
+  font-family: "Montserrat", sans-serif;
+  box-sizing: border-box;
+}
+
+.upload-card {
+  background: white;
+  border-radius: 15px;
+  padding: 50px 40px;
+  width: 100%;
+  max-width: 80%; /* centered card, responsive */
+ 
+  display: flex;
+  flex-direction: column;
+}
+
+.upload-title {
+  font-size: 32px;
+  font-weight: 900;
+  color: #e0505c;
+  margin-bottom: 25px;
+  border-bottom: 2px solid #e0505c;
+  padding-bottom: 8px;
+}
+
+.upload-form {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.form-row label {
+  width: 150px;
+  font-weight: 600;
+  color: #111;
+}
+
+.input-field {
+  flex: 1;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 2px solid #e0505c;
+  font-size: 16px;
+  outline: none;
+  transition: 0.3s;
+}
+
+.input-field:focus {
+  border-color: #e0505c;
+  box-shadow: 0 0 10px rgba(94, 234, 212, 0.2);
+}
+
+.file-input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 10px;
+  border: 2px dashed #e0505c;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.file-input:hover {
+  border-color: #e0505c;
+}
+
+.button-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 25px;
+}
+
+.btn-primary,
+.btn-secondary {
+  flex: none; /* remove stretching */
+  width: auto; /* let width be defined by padding */
+  padding: 12px 25px; /* smaller buttons */
+}
+
+.btn-primary {
+  flex: 1;
+  padding: 14px;
+  border-radius: 14px;
+  border: 2px solid #e0505c;
+  background: #e0505c;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+  min-width: none;
+}
+
+.btn-primary:hover {
+  transform: scale(1.03);
+}
+
+.btn-secondary {
+  flex: 1;
+  padding: 14px;
+  border-radius: 14px;
+  border: 2px solid #e0505c;
+  background: white;
+  color: #e0505c;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  color: black;
+  transform: scale(1.03);
+}
+
+.upload-instructions {
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 2px solid #e0505c;
+  color: #111;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ===========================
+   MODALS (Unified)
+=========================== */
+/* MODAL OVERLAY */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  backdrop-filter: blur(6px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  animation: fadeIn 0.35s ease-out;
+}
+
+/* MODAL BOX */
+.modal-box {
+  background: #ffffff;
+  color: #111;
+  padding: 45px 50px;
+  border-radius: 20px;
+  max-width: 480px;
+  width: 95%;
+  min-height: 300px;
+  text-align: center;
+  box-shadow: 0 15px 50px rgba(0,0,0,0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  animation: flyIn 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  position: relative;
+}
+
+/* WOW EFFECT ON EDGES */
+.modal-box::before {
+  content: "";
+  position: absolute;
+  inset: -5px;
+  border-radius: 23px;
+  background: linear-gradient(135deg, #ea5e5e, #ee6b4b);
+  z-index: -1;
+  filter: blur(18px);
+  opacity: 0.45;
+}
+
+/* TITLE */
+.modal-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: #111;
+  letter-spacing: 0.5px;
+}
+
+/* SUB TEXT */
+.modal-desc {
+  font-size: 15px;
+  color: #444;
+}
+
+/* INPUT FIELDS — text should be black now */
+.input-field {
+  padding: 14px;
+  border-radius: 14px;     /* more curvy */
+  border: 2px solid #000;  /* black border */
+  width: 100%;
+  font-size: 16px;
+  color: #000;             /* text black */
+  background: #fff;        /* white bg */
+}
+
+.input-field::placeholder {
+  color: #444;             /* dark placeholder */
+}
+
+/* CANCEL / CLOSE BUTTON — more curvy + more padding */
+.close-btn {
+  background: #fff;
+  color: #000;
+  border: 2px solid #000;
+  padding: 12px 20px;      /* increased padding */
+  border-radius: 14px;     /* curvy look */
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.close-btn:hover {
+  background: #f2f2f2;
+  transform: scale(1.05);
+}
+
+/* BUTTONS */
+.btn-primary,
+.btn-secondary {
+  padding: 12px;
+  width: 100%;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+/* PRIMARY BUTTON → BLACK BG + WHITE TEXT */
+.btn-primary {
+  background: #000;
+  color: #fff;
+  border: 2px solid #000;
+}
+
+.btn-primary:hover {
+  transform: scale(1.05) translateY(-3px);
+  background: #222;
+}
+
+/* SECONDARY BUTTON → WHITE BG, BLACK TEXT, BLACK BORDER */
+.btn-secondary,
+.close-btn {
+  background: white;
+  color: #000;
+  border: 2px solid #000;
+}
+
+.btn-secondary:hover,
+.close-btn:hover {
+  transform: scale(1.05);
+  background: #f9f9f9;
+}
+
+/* ERROR TEXT */
+.error-text {
+  color: #ef4444;
+  font-size: 14px;
+}
+
+/* ANIMATIONS */
+@keyframes flyIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.85);
+  }
+  60% {
+    transform: translateY(8px) scale(1.03);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+
+/* ===========================
+   RESPONSIVE
+=========================== */
 @media (max-width: 768px) {
   .nav-links {
     display: none;
@@ -182,364 +709,222 @@
   }
 }
 
-  /* Modal Styling */
-  .modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 50;
-  }
-  
-  .modal-box {
-    background: white;
-    padding: 25px;
-    border-radius: 10px;
-    width: 350px;
-    text-align: center;
-  }
-  
-  .modal-title {
-    font-size: 20px;
-    font-weight: bold;
-    margin-bottom: 15px;
-  }
-  
-  .close-btn {
-    margin-top: 12px;
-    padding: 10px;
-    width: 100%;
-    background: black;
-    color: white;
-    border-radius: 6px;
-    cursor: pointer;
-  }
+/* ===========================
+   HERO SECTION (UPDATED)
+=========================== */
 
-  /* Page background */
-.app-container {
-    min-height: 100vh;
-    background: linear-gradient(to bottom right, #0f172a, #064e3b);
-    color: #5eead4;
-    font-family: system-ui, sans-serif;
-  }
-  
-  /* Navbar */
-  .nav-header {
-    width: 100%;
-    background: rgba(0,0,0,0.9);
-    backdrop-filter: blur(6px);
-    padding: 0 20px;
-  }
-  
-  .nav-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    height: 64px;
-  }
-  
-  .nav-links button {
-    background: none;
-    border: none;
-    color: #5eead4;
-    font-weight: 500;
-    cursor: pointer;
-    margin-left: 15px;
-    padding: 6px 12px;
-    border-radius: 6px;
-    transition: 0.2s;
-  }
-  
-  .nav-links button:hover {
-    color: white;
-    background: rgba(94, 234, 212, 0.2);
-  }
-  
-  /* Tickets Grid */
-  .tickets-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+body,
+.hero-title,
+.hero-desc,
+.hero-list,
+.hero-subtitle {
+  font-family: "Montserrat", sans-serif !important;
+}
+
+
+/* Full-screen 2-column layout */
+.hero-layout {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  padding: 40px 60px;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: space-between; /* Push left & right apart */
+}
+
+.hero-left {
+  flex: 1.4;         /* Increased width */
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-left: 60px; /* Reduced to remove extra gap */
+}
+
+/* Right section: slightly smaller, fully right aligned */
+.hero-right {
+  flex: 0.9;          /* Reduced width so carousel shifts right */
+  display: flex;
+  justify-content: flex-end;  /* push fully to right */
+  align-items: center;
+}
+
+/* Large title */
+.hero-title {
+  font-size: 56px;
+  font-weight: 900;
+  color: #e0505c;
+}
+
+/* Description text widened */
+.hero-desc {
+  font-size: 22px;
+  max-width: 900px;   /* was 480px → more width */
+  line-height: 1.5;
+  color: #e0505c;
+}
+
+/* Subtitle */
+.hero-subtitle {
+  font-size: 1.8rem;
+  margin-bottom: 15px;
+  color: #ffffffcc;
+}
+
+.hero-section-title {
+  margin-top: 25px;
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #e0505c;
+}
+
+.hero-list {
+  margin: 10px 0 20px 20px;
+  color: #e0505c;
+  line-height: 1.6;
+   font-size: 1.4rem;
+}
+
+.hero-call-to-action {
+  margin-top: 30px;
+  font-size: 1.5rem;
+  color: #e0505c;
+}
+
+/* ===========================
+   RESPONSIVE FIXES
+=========================== */
+@media (max-width: 900px) {
+  .hero-layout {
+    flex-direction: column;
+    height: auto;
+    padding: 30px 20px;
     gap: 20px;
   }
-  
-  /* Ticket Card */
-  .hero-card {
-    background: linear-gradient(#1e293b70, #0f766e50);
-    border: 1px solid rgba(45, 212, 191, 0.3);
-    border-radius: 18px;
-    padding: 20px;
-    box-shadow: 0 10px 30px rgba(6,95,70,0.18);
-  }
-  
-  .hero-card img {
-    width: 100%;
-    height: 140px;
-    object-fit: cover;
-    border-radius: 10px;
-    margin-bottom: 12px;
-    cursor: pointer;
-  }
-  
-  .hero-card h3 {
-    font-size: 18px;
-    font-weight: 700;
-    margin-bottom: 6px;
-  }
-  
-  /* Buttons */
-  .btn-primary {
-    padding: 8px 16px;
-    border-radius: 8px;
-    border: 1px solid rgba(45, 212, 191, 0.4);
-    background: rgba(45, 212, 191, 0.2);
-    cursor: pointer;
-    color: #5eead4;
-  }
-  
-  .btn-primary:hover {
-    transform: scale(1.05);
-  }
-  
-  .btn-secondary {
-    padding: 8px 16px;
-    border-radius: 8px;
-    border: 1px solid rgba(45, 212, 191, 0.4);
-    background: none;
-    cursor: pointer;
-    color: #5eead4;
-  }
-  
-  .btn-secondary:hover {
-    filter: brightness(1.15);
-  }
-  
-  /* Loader */
-  .loader-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 10000;
-  }
-  
-  .loader {
-    padding: 20px 40px;
-    background: #111827;
-    color: #5eead4;
-    font-size: 18px;
-    font-weight: bold;
-    border-radius: 8px;
-  }
-  
-  .upload-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: calc(100vh - 100px); /* account for navbar height */
-    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-    padding: 20px;
-  }
-  
-  .upload-card {
-    background: rgba(0, 0, 0, 0.85);
-    border: 2px solid #5eead4;
-    border-radius: 15px;
-    padding: 40px 30px;
-    width: 100%;
-    max-width: 500px;
-    box-shadow: 0 0 20px #5eead4;
+
+  .hero-left {
+    padding-left: 0;
     text-align: center;
-  }
-  
-  .upload-title {
-    color: #5eead4;
-    margin-bottom: 25px;
-    font-size: 28px;
-    font-weight: bold;
-  }
-  
-  .upload-form {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-  
-  .input-field {
-    padding: 12px 15px;
-    border-radius: 10px;
-    border: 1px solid #5eead4;
-    background-color: rgba(255, 255, 255, 0.05);
-    color: #fff;
-    font-size: 16px;
-  }
-  
-  .input-field::placeholder {
-    color: rgba(94, 234, 212, 0.7);
-  }
-  
-  .file-label {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    font-weight: bold;
-    color: #5eead4;
-  }
-  
-  .file-input {
-    margin-top: 5px;
-    border-radius: 8px;
-    padding: 5px;
-    border: 1px solid #5eead4;
-    background-color: rgba(255, 255, 255, 0.05);
-    color: #fff;
-  }
-  
-  .btn-primary {
-    padding: 12px;
-    border-radius: 10px;
-    border: none;
-    background: #5eead4;
-    color: #000;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.3s;
-  }
-  
-  .btn-primary:hover {
-    background: #38c5b0;
-  }
-  
-  .upload-loading {
-    color: #5eead4;
-    margin-bottom: 15px;
-    font-weight: bold;
-  }
-  
-  input[type="datetime-local"].input-field::-webkit-calendar-picker-indicator {
-    filter: invert(1); /* invert colors to make black icon white */
-    cursor: pointer;
-  }
-  
-  /* For Firefox */
-  input[type="datetime-local"].input-field::-moz-calendar-picker-indicator {
-    filter: invert(1);
-    cursor: pointer;
-  }
-  
-  /* Optional: keep input text color consistent */
-  input[type="datetime-local"].input-field {
-    color: #fff; /* text color */
-    background-color: #1e1e2f; /* match your form background */
-    border: 1px solid #5eead4;
-    border-radius: 6px;
-    padding: 10px;
+    flex: unset;
   }
 
-  .loader-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
+  .hero-right {
+    max-width: 100%;
     width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5); /* semi-transparent dark overlay */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 999;
   }
-  
-  .loader-modal {
-    background: rgba(255, 255, 255, 0.1); /* transparent white */
-    padding: 30px 50px;
-    border-radius: 12px;
+
+  .hero-title {
+    font-size: 40px;
+  }
+
+  .hero-desc {
+    max-width: 100%;
     font-size: 18px;
-    color: #ffffff; /* white text */
-    font-weight: bold;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
   }
-  
-  
-  .modal-overlay {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.6);
-    display: flex; justify-content: center; align-items: center;
-    z-index: 999;
-  }
-  
-  .modal-box {
-    background: #111827; /* dark theme */
-    color: #fff;
-    padding: 30px 40px;
-    border-radius: 12px;
-    width: 100%;
-    max-width: 400px;
-    text-align: center;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
-    display: flex; flex-direction: column; gap: 15px;
-  }
-  
-  .modal-title {
-    font-size: 22px;
-    font-weight: bold;
-    margin-bottom: 10px;
-    color: #5eead4;
-  }
-  
-  .modal-desc {
-    font-size: 14px;
-    color: #ccc;
-    margin-bottom: 15px;
-  }
-  
-  .input-field {
-    width: 100%;
-    padding: 12px;
-    border-radius: 8px;
-    border: 1px solid #333;
-    background: #1f2937;
-    color: #fff;
-    margin-bottom: 12px;
-  }
-  
-  .btn-primary {
-    background-color: #5eead4;
-    color: #111827;
-    border: none;
-    padding: 12px;
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.3s;
-  }
-  
-  .btn-primary:hover {
-    background-color: #34d399;
-  }
-  
-  .close-btn {
-    background: transparent;
-    border: 1px solid #5eead4;
-    color: #5eead4;
-    padding: 8px 16px;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-top: 10px;
-    transition: 0.3s;
-  }
-  
-  .close-btn:hover {
-    background: #5eead4;
-    color: #111827;
-  }
-  
-  .error-text {
-    color: #f87171;
-    font-size: 14px;
-  }
-  
+}
+.ticket-card {
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+  align-items: flex-start; /* top-align image/details/buttons */
+  position: relative;
+}
+
+.ticket-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Vertical button column */
+.ticket-action-cell {
+  display: flex;
+  flex-direction: column; /* vertical stack */
+  gap: 8px;
+  position: absolute; /* place it beside details */
+  right: 16px; /* distance from right edge */
+  top: 50%; /* center vertically relative to card */
+  transform: translateY(-50%);
+}
+
+.btn-approve,
+.btn-reject {
+  width: 100px; /* fixed width for vertical buttons */
+  padding: 6px 0;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.btn-approve {
+  background-color: black;
+  color: white;
+  border: 1px solid black;
+}
+
+.btn-approve:hover {
+  background-color: #333;
+}
+
+.btn-reject {
+  background-color: white;
+  color: black;
+  border: 1px solid black;
+}
+
+.btn-reject:hover {
+  background-color: black;
+  color: white;
+}
+.admin-instructions {
+  background-color: #fff4e5;
+  border-left: 6px solid #ff9800;
+  padding: 16px;
+  margin-bottom: 20px;
+  border-radius: 6px;
+}
+
+.admin-instructions h3 {
+  margin-top: 0;
+  margin-bottom: 8px;
+ 
+}
+
+.admin-instructions ul {
+  padding-left: 20px;
+  margin-top: 4px;
+  margin-bottom: 8px;
+}
+
+.instructions-box p {
+  margin: 8px 0;
+}
+.tickets-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.search-box {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  flex: 1;
+  min-width: 200px;
+}
+
+.sort-dropdown, .filter-dropdown {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  min-width: 150px;
+}

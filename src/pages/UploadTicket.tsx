@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { addTicket } from '../redux/ticketsSlice';
@@ -6,6 +6,18 @@ import { AppDispatch, RootState } from '../redux/store';
 import { logout } from '../redux/slice';
 import logo from './logo.png';
 import './Dashboard.css';
+
+const indianCities = [
+  "Mumbai", "Delhi", "Bengaluru", "Hyderabad", "Ahmedabad",
+  "Chennai", "Kolkata", "Pune", "Jaipur", "Lucknow",
+  "Nagpur", "Surat", "Vadodara", "Vijayawada", "Visakhapatnam",
+  "Bhopal", "Coimbatore", "Indore", "Thiruvananthapuram", "Guwahati",
+];
+
+interface Ticket {
+  bookingId: string;
+  [key: string]: any;
+}
 
 export default function UploadTicket() {
   const dispatch = useDispatch<AppDispatch>();
@@ -18,10 +30,12 @@ export default function UploadTicket() {
     eventDateTime: '',
     venue: '',
     price: '',
+    bookingId: '',
   });
   const [eventImageFile, setEventImageFile] = useState<File | null>(null);
   const [ticketFile, setTicketFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+  const [userTickets, setUserTickets] = useState<Ticket[]>([]);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -29,11 +43,40 @@ export default function UploadTicket() {
     navigate('/');
   };
 
+  // Fetch existing tickets for the user
+  useEffect(() => {
+    const fetchUserTickets = async () => {
+      if (!user) return;
+      const idToken = localStorage.getItem('token');
+      try {
+        const res = await fetch(`http://192.168.29.94:8080/api/tickets/user/${user.email}`, {
+          headers: { Authorization: `Bearer ${idToken}` },
+        });
+        if (!res.ok) throw new Error('Failed to fetch user tickets');
+        const data = await res.json();
+        setUserTickets(Array.isArray(data) ? data : data.tickets || []);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchUserTickets();
+  }, [user]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Check for duplicate Booking ID
+    const duplicate = userTickets.find(ticket => ticket.bookingId === form.bookingId);
+    if (duplicate) {
+      alert('Error: A ticket with this Booking ID already exists!');
+      return;
+    }
+
     setLoading(true);
 
     const formData = new FormData();
+    formData.append('bookingId', form.bookingId);
     formData.append('eventName', form.eventName);
     formData.append('eventDateTime', form.eventDateTime);
     formData.append('venue', form.venue);
@@ -48,18 +91,27 @@ export default function UploadTicket() {
         body: formData,
         headers: { Authorization: `Bearer ${idToken}` },
       });
-
-      if (!res.ok) throw new Error(`Upload failed: ${res.status}`);
+    
+      if (!res.ok) {
+        // Only show a friendly message instead of raw URL
+        const msg = res.status === 409 
+          ? 'A ticket with this Booking ID already exists!'
+          : 'Ticket upload failed. Please try again.';
+        throw new Error(msg);
+      }
+    
       const uploadedTicket = await res.json().catch(() => null);
       if (uploadedTicket) dispatch(addTicket(uploadedTicket));
-
+    
       navigate('/home', { state: { showMyTickets: true } });
     } catch (err: any) {
       console.error('Upload failed:', err);
-      alert('Ticket upload failed. Please try again.');
+      // Show friendly alert without localhost or URL
+      alert(err.message || 'Ticket upload failed. Please try again.');
     } finally {
       setLoading(false);
     }
+    
   };
 
   return (
@@ -69,15 +121,8 @@ export default function UploadTicket() {
         <nav className="nav-container">
           <div className="nav-content">
             <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-              <button
-                onClick={() => navigate('/home')}
-                className="nav-link"
-                style={{ background: 'transparent', color: '#5eead4', fontSize: '18px', border: 'none', cursor: 'pointer' }}
-              >
-                ← Back
-              </button>
               <a href="#" className="logo-link">
-                <img src={logo} alt="TicketWave Logo" style={{ height: '60px', width: '80px' }} />
+                <img src={logo} alt="TicketWave Logo" style={{ height: '100px', width: '150px' }} />
               </a>
             </div>
 
@@ -106,41 +151,76 @@ export default function UploadTicket() {
       {/* Upload Form */}
       <div className="upload-container">
         <div className="upload-card">
-          <h2 className="upload-title">Upload Your Ticket</h2>
+          <h2 className="upload-title">Upload Ticket</h2>
 
           <form onSubmit={handleSubmit} className="upload-form">
-            <input
-              placeholder="Event Name"
-              value={form.eventName}
-              onChange={(e) => setForm({ ...form, eventName: e.target.value })}
-              required
-              className="input-field"
-            />
-            <input
-              type="datetime-local"
-              value={form.eventDateTime}
-              onChange={(e) => setForm({ ...form, eventDateTime: e.target.value })}
-              required
-              className="input-field"
-            />
-            <input
-              placeholder="Venue"
-              value={form.venue}
-              onChange={(e) => setForm({ ...form, venue: e.target.value })}
-              required
-              className="input-field"
-            />
-            <input
-              type="number"
-              placeholder="Price"
-              value={form.price}
-              onChange={(e) => setForm({ ...form, price: e.target.value })}
-              required
-              className="input-field"
-            />
 
-            <label className="file-label">
-              Event Image
+            <div className="form-row">
+              <label>Booking ID:</label>
+              <input
+                type="text"
+                placeholder="Booking ID"
+                value={form.bookingId}
+                onChange={(e) => setForm({ ...form, bookingId: e.target.value })}
+                required
+                className="input-field"
+              />
+            </div>
+
+            <div className="form-row">
+              <label>Event Name:</label>
+              <input
+                type="text"
+                placeholder="Event Name"
+                value={form.eventName}
+                onChange={(e) => setForm({ ...form, eventName: e.target.value })}
+                required
+                className="input-field"
+              />
+            </div>
+
+            <div className="form-row">
+              <label>Date:</label>
+              <input
+                type="datetime-local"
+                value={form.eventDateTime}
+                onChange={(e) => setForm({ ...form, eventDateTime: e.target.value })}
+                required
+                className="input-field"
+              />
+            </div>
+
+            <div className="form-row">
+              <label>Venue (City):</label>
+              <select
+                value={form.venue}
+                onChange={(e) => setForm({ ...form, venue: e.target.value })}
+                required
+                className="input-field"
+              >
+                <option value="">Select City</option>
+                {indianCities.map((city) => (
+                  <option key={city} value={city}>
+                    {city}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="form-row">
+              <label>Price:</label>
+              <input
+                type="number"
+                placeholder="Price"
+                value={form.price}
+                onChange={(e) => setForm({ ...form, price: e.target.value })}
+                required
+                className="input-field"
+              />
+            </div>
+
+            <div className="form-row">
+              <label>Event Image:</label>
               <input
                 type="file"
                 accept="image/*"
@@ -148,10 +228,10 @@ export default function UploadTicket() {
                 required
                 className="file-input"
               />
-            </label>
+            </div>
 
-            <label className="file-label">
-              Ticket PDF
+            <div className="form-row">
+              <label>Ticket PDF:</label>
               <input
                 type="file"
                 accept="application/pdf"
@@ -159,12 +239,28 @@ export default function UploadTicket() {
                 required
                 className="file-input"
               />
-            </label>
+            </div>
 
-            <button type="submit" disabled={loading} className="btn-primary">
-              {loading ? 'Uploading...' : 'Submit for Approval'}
-            </button>
+            <div className="button-row">
+              <button type="submit" disabled={loading} className="btn-primary">
+                {loading ? 'Uploading...' : 'Submit for Approval'}
+              </button>
+              <button type="button" onClick={() => navigate('/home')} className="btn-secondary">
+                Cancel
+              </button>
+            </div>
           </form>
+
+          <div className="upload-instructions">
+            <strong>Instructions:</strong>
+            <ul>
+              <li>Upload a clear image or PDF of the ticket. Ensure the text, QR/barcode, and seat details are fully visible.</li>
+              <li>Verify the event date and time before submitting to avoid buyer confusion or disputes.</li>
+              <li>Enter seat, row, and section exactly as printed on the ticket. Even small errors may cause the buyer to lose entry.</li>
+              <li>Do not include any personal information such as your name, phone number, or booking account details in the uploaded image.</li>
+              <li>Your ticket will first undergo admin review. Only after approval will it be made visible to buyers for purchase.</li>
+            </ul>
+          </div>
         </div>
       </div>
 

@@ -7,6 +7,7 @@ import { RootState } from '../redux/store';
 import './Dashboard.css';
 import bgImage from './bg.jpg';
 import logo from './logo.png';
+import VerticalCarousel from './Carousal';
 
 export default function Dashboard() {
   const [openUserModal, setOpenUserModal] = useState(false);
@@ -82,7 +83,7 @@ export default function Dashboard() {
           <div className="nav-content">
             <div className="logo-container">
               <a href="#" className="logo-link">
-                <img src={logo} alt="TicketWave Logo" style={{ height: '90px', width: '110px' }} />
+                <img src={logo} alt="TicketWave Logo" style={{ height: '100px', width: '180px' }} />
               </a>
             </div>
             <div className="nav-links">
@@ -113,28 +114,57 @@ export default function Dashboard() {
         </nav>
       </header>
 
-      {/* Hero Section */}
-      <main className="content-wrapper">
-        <div
-          className="hero-bg"
-          style={{
-            backgroundImage: `url(${bgImage})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            width: '100%',
-            height: '100vh',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            flexDirection: 'column',
-            color: '#fff',
-            textAlign: 'center',
-          }}
-        >
-          <h1 className="hero-title">Welcome to <span className="white-text">TicketWave</span></h1>
-          <p className="hero-desc">Sell, manage and explore events with a slick, neon inspired interface.</p>
-        </div>
-      </main>
+      <main className="hero-layout">
+      <div className="hero-left">
+  <h1 className="hero-title">
+    Welcome to <span className="white-text">TicketWave</span>
+  </h1>
+
+  <h2 className="hero-subtitle">Your Smart Way to Sell and Buy Tickets</h2>
+
+  <p className="hero-desc">
+    Got a ticket for an event you can’t attend anymore? No worries —
+    <strong> Extickets </strong> makes it super easy to sell your unused tickets or
+    discover verified ones from other users. Instead of letting great seats go to
+    waste, simply upload your ticket and let someone else enjoy the moment!
+  </p>
+
+  <h3 className="hero-section-title">Why Extickets?</h3>
+  <ul className="hero-list">
+    <li>Every ticket undergoes a <strong>verification process</strong> to ensure authenticity.</li>
+    <li>Sellers can quickly upload and list tickets for <strong>admin approval</strong>.</li>
+    <li>Buyers can browse available options, compare prices, and purchase securely.</li>
+    <li>Instant confirmation ensures a <strong>smooth and trusted experience</strong>.</li>
+    <li>Perfect for movies, concerts, sports, or any event ticket you can’t use!</li>
+  </ul>
+
+  <h3 className="hero-section-title">A Seamless Experience</h3>
+  <p className="hero-desc">
+    Whether you're buying or selling, TicketWave connects the right ticket to the
+    right person at the right time. Sellers can turn unused tickets into value,
+    while buyers can grab last-minute opportunities with confidence.
+  </p>
+
+  <p className="hero-desc">
+    Don’t let good seats go unused. Your ticket could be someone’s perfect moment —
+    and their ticket could be yours.
+  </p>
+
+  <h3 className="hero-call-to-action">Ready to get started?</h3>
+  <p className="hero-desc">
+    Upload your ticket now or explore available listings and secure your spot at
+    your favorite event — before it’s too late!
+  </p>
+</div>
+
+
+  <div className="hero-right">
+    <VerticalCarousel />
+  </div>
+</main>
+
+
+     
 
       {/* User Modal */}
       {openUserModal && (
